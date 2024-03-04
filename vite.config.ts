@@ -2,6 +2,7 @@
 
 import { defineConfig } from 'vite';
 import analog from '@analogjs/platform';
+import { resolve } from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -10,6 +11,9 @@ export default defineConfig(({ mode }) => ({
     target: ['es2020'],
   },
   resolve: {
+    alias: {
+      '@services': resolve(__dirname, './src/app/services')
+    },
     mainFields: ['module'],
   },
   plugins: [analog()],

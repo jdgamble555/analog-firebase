@@ -1,0 +1,19 @@
+<div class="text-center">
+    <h1 class="text-3xl font-semibold my-3">Angular Firebase Todo App</h1>
+
+    @if (us.user$().loading) {
+
+    <p>Loading...</p>
+
+    } @else if (us.user$().data) {
+
+        <app-profile />
+
+    } @else {
+
+    <button type="button" class="border p-2 rounded-md text-white bg-red-600" (click)="us.login()">
+        Signin with Google
+    </button>
+
+    }
+</div>
