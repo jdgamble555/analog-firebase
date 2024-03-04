@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [analog({
     nitro: {
-      preset: 'vercel-edge'
+      preset: 'netlify-builder'
     }
   })],
   test: {
