@@ -16,7 +16,11 @@ export default defineConfig(({ mode }) => ({
     },
     mainFields: ['module'],
   },
-  plugins: [analog()],
+  plugins: [analog({
+    nitro: {
+      preset: 'netlify-edge'
+    }
+  })],
   test: {
     globals: true,
     environment: 'jsdom',
