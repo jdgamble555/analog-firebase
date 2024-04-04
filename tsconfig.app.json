@@ -11,5 +11,5 @@
     "src/**/*.d.ts",
     "src/app/routes/**/*.ts",
     "src/app/pages/**/*.page.ts"
-  ]
+  ],
 }

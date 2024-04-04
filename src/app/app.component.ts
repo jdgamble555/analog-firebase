@@ -1,11 +1,17 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
-  template: ` <router-outlet /> `,
+  imports: [RouterOutlet, RouterLink],
+  template: `
+  <router-outlet />
+  <nav class="flex gap-3 justify-center mt-5">
+      <a routerLink="/">Home</a>
+      <a routerLink="/about">About</a>
+  </nav>
+  `,
   styles: [],
 })
-export class AppComponent {}
+export class AppComponent { }
