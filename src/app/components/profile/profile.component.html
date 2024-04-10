@@ -1,8 +1,8 @@
 <div class="flex flex-col gap-3 items-center">
-    <h3 class="font-bold">Hi {{ us.user$().data?.displayName }}!</h3>
-    <img [src]="us.user$().data?.photoURL" width="100" height="100" alt="user avatar" />
-    <p>Your userID is {{ us.user$().data?.uid }}</p>
-    <button type="button" class="border p-2 rounded-md text-white bg-lime-600" (click)="us.logout()">
+    <h3 class="font-bold">Hi {{ user().data?.displayName }}!</h3>
+    <img [src]="user().data?.photoURL" width="100" height="100" alt="user avatar" />
+    <p>Your userID is {{ user().data?.uid }}</p>
+    <button type="button" class="border p-2 rounded-md text-white bg-lime-600" (click)="logout()">
         Logout
     </button>
     <app-todos />

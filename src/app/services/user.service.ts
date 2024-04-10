@@ -1,4 +1,12 @@
-import { Injectable, effect, inject, isDevMode, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import {
+  InjectionToken,
+  PLATFORM_ID,
+  effect,
+  inject,
+  isDevMode,
+  signal
+} from '@angular/core';
 import {
   Auth,
   GoogleAuthProvider,
@@ -16,75 +24,119 @@ export interface userData {
   email: string | null;
 };
 
-
-@Injectable({
-  providedIn: 'root'
-})
-export class UserService {
-
-  private auth = typeof window !== 'undefined' ? inject(Auth) : null;
-
-  user$ = signal<{
-    loading: boolean,
-    data: userData | null
-  }>({
-    loading: true,
-    data: null
-  });
-
-  constructor() {
-
-    effect(() => {
-
-      // toggle loading
-      this.user$().loading = true;
-
-      // server environment
-      if (!this.auth) {
-        this.user$().loading = false;
-        this.user$().data = null;
-        return;
+export const FIREBASE_AUTH = new InjectionToken<Auth | null>(
+  'firebase-auth',
+  {
+    providedIn: 'root',
+    factory() {
+      const platformID = inject(PLATFORM_ID);
+      if (isPlatformBrowser(platformID)) {
+        return inject(Auth);
       }
+      return null;
+    }
+  }
+);
 
-      return onIdTokenChanged(this.auth, (_user: User | null) => {
+export const USER = new InjectionToken(
+  'user',
+  {
+    providedIn: 'root',
+    factory() {
 
-        this.user$().loading = false;
+      const auth = inject(FIREBASE_AUTH);
 
-        if (!_user) {
-          this.user$().data = null;
+      const user$ = signal<{
+        loading: boolean,
+        data: userData | null
+      }>({
+        loading: true,
+        data: null
+      });
+
+      effect(() => {
+        // toggle loading
+        user$().loading = true;
+
+        // server environment
+        if (!auth) {
+          user$().loading = false;
+          user$().data = null;
           return;
         }
 
-        // map data to user data type
-        const { photoURL, uid, displayName, email } = _user;
-        const data = { photoURL, uid, displayName, email };
+        return onIdTokenChanged(auth,
+          (_user: User | null) => {
 
-        // print data in dev mode
-        if (isDevMode()) {
-          console.log(data);
-        }
+            user$().loading = false;
 
-        // set store
-        this.user$().data = data;
+            if (!_user) {
+              user$().data = null;
+              return;
+            }
+
+            // map data to user data type
+            const {
+              photoURL,
+              uid,
+              displayName,
+              email
+            } = _user;
+            const data = {
+              photoURL,
+              uid,
+              displayName,
+              email
+            };
+
+            // print data in dev mode
+            if (isDevMode()) {
+              console.log(data);
+            }
+
+            // set store
+            user$().data = data;
+          });
       });
-
-    });
-
-  }
-
-  login() {
-    if (this.auth) {
-      const signIn = typeof window !== 'undefined' ? signInWithPopup : null;
-      if (signIn) {
-        signIn(this.auth, new GoogleAuthProvider());
-      }      
+      return user$;
     }
   }
+);
 
-  logout() {
-    if (this.auth) {
-      signOut(this.auth);
-    }  
+export const LOGIN = new InjectionToken(
+  'LOGIN',
+  {
+    providedIn: 'root',
+    factory() {
+      const auth = inject(FIREBASE_AUTH);
+      return () => {
+        if (auth) {
+          signInWithPopup(
+            auth,
+            new GoogleAuthProvider()
+          );
+          return;
+        }
+        throw 'No USER!';
+      };
+    }
   }
+);
 
-}
+export const LOGOUT = new InjectionToken(
+  'LOGOUT',
+  {
+    providedIn: 'root',
+    factory() {
+      const auth = inject(FIREBASE_AUTH);
+      return () => {
+        if (auth) {
+          signOut(auth);
+          return;
+        }
+        throw 'No USER!';
+      };
+    }
+  }
+);
+

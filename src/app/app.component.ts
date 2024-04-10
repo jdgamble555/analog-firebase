@@ -11,7 +11,6 @@ import { RouterLink, RouterOutlet } from '@angular/router';
       <a routerLink="/">Home</a>
       <a routerLink="/about">About</a>
   </nav>
-  `,
-  styles: [],
+  `
 })
 export class AppComponent { }

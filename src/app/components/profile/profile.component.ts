@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { UserService } from '@services/user.service';
+import { LOGOUT, USER } from '@services/user.service';
 import { TodosComponent } from '../todos/todos.component';
 
 
@@ -10,5 +10,6 @@ import { TodosComponent } from '../todos/todos.component';
   templateUrl: './profile.component.html'
 })
 export class ProfileComponent {
-  us = inject(UserService);
+  user = inject(USER);
+  logout = inject(LOGOUT);
 }

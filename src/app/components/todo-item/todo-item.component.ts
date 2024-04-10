@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, inject } from '@angular/core';
-import { TodoItem, TodosService } from '@services/todos.service';
+import { DELETE_TODO, TodoItem, UPDATE_TODO } from '@services/todos.service';
 
 @Component({
   selector: 'app-todo-item',
@@ -12,6 +12,7 @@ export class TodoItemComponent {
 
   @Input() todo!: TodoItem;
 
-  ts = inject(TodosService);
+  updateTodo = inject(UPDATE_TODO);
+  deleteTodo = inject(DELETE_TODO);
 
 }

@@ -1,14 +1,9 @@
 <div>
     <div class="grid grid-cols-[auto,auto,auto,auto] gap-3 justify-items-start">
-
         @for (todo of todos().data; track todo.id) {
-        
-            <app-todo-item class="contents" [todo]="todo" />
-
+        <app-todo-item class="contents" [todo]="todo" />
         } @empty {
-
         <p><b>Add your first todo item!</b></p>
-
         }
     </div>
     <app-todo-form />

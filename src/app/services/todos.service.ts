@@ -1,8 +1,12 @@
-import { Injectable, effect, inject, isDevMode, signal } from '@angular/core';
 import {
-  CollectionReference,
+  InjectionToken,
+  effect,
+  inject,
+  isDevMode,
+  signal
+} from '@angular/core';
+import {
   DocumentData,
-  getFirestore,
   QuerySnapshot,
   addDoc,
   collection,
@@ -14,9 +18,10 @@ import {
   serverTimestamp,
   updateDoc,
   where,
-  Timestamp
+  Timestamp,
+  Firestore
 } from '@angular/fire/firestore';
-import { UserService } from './user.service';
+import { USER } from './user.service';
 
 export interface TodoItem {
   id: string;
@@ -47,101 +52,132 @@ export const snapToData = (
   }) as TodoItem[];
 }
 
-@Injectable({
-  providedIn: 'root'
-})
-export class TodosService {
+export const TODOS = new InjectionToken(
+  'TODOS',
+  {
+    providedIn: 'root',
+    factory() {
+      const db = inject(Firestore);
+      const user = inject(USER);
 
-  db = getFirestore();
-  user = inject(UserService).user$;
+      const todos = signal<{
+        data: TodoItem[],
+        loading: boolean
+      }>({
+        data: [],
+        loading: true
+      });
 
-  todos = signal<{
-    data: TodoItem[],
-    loading: boolean
-  }>({
-    data: [],
-    loading: true
-  });
+      effect(() => {
 
-  constructor() {
+        const userData = user().data;
 
-    effect(() => {
+        if (!userData) {
+          todos().loading = false;
+          todos().data = [];
+          return;
+        }
 
-      const userData = this.user().data;
+        return onSnapshot(
 
-      if (!userData) {
-        this.todos().loading = false;
-        this.todos().data = [];
-        return;
-      }
+          // query realtime todo list
+          query(
+            collection(db, 'todos'),
+            where('uid', '==', userData.uid),
+            orderBy('created')
+          ), (q) => {
 
-      return onSnapshot(
+            // toggle loading
+            todos().loading = false;
 
-        // query realtime todo list
-        query(
-          collection(this.db, 'todos') as CollectionReference<TodoItem[]>,
-          where('uid', '==', userData.uid),
-          orderBy('created')
-        ), (q) => {
+            // get data, map to todo type
+            const data = snapToData(q);
 
-          // toggle loading
-          this.todos().loading = false;
+            /**
+             * Note: Will get triggered 2x on add 
+             * 1 - for optimistic update
+             * 2 - update real date from server date
+             */
 
-          // get data, map to todo type
-          const data = snapToData(q);
+            // print data in dev mode
+            if (isDevMode()) {
+              console.log(data);
+            }
 
-          /**
-           * Note: Will get triggered 2x on add 
-           * 1 - for optimistic update
-           * 2 - update real date from server date
-           */
+            // add to store
+            todos().data = data;
+          });
 
-          // print data in dev mode
-          if (isDevMode()) {
-            console.log(data);
-          }
+      });
+      return todos;
+    }
+  }
+);
 
-          // add to store
-          this.todos().data = data;
+export const ADD_TODO = new InjectionToken(
+  'ADD_TODO',
+  {
+    providedIn: 'root',
+    factory() {
+
+      const user = inject(USER);
+      const db = inject(Firestore)
+
+      return (e: SubmitEvent) => {
+
+        e.preventDefault();
+
+        const userData = user().data;
+
+        if (!userData) {
+          throw 'No User!';
+        }
+
+        // get and reset form
+        const target = e.target as HTMLFormElement;
+        const form = new FormData(target);
+        const { task } = Object.fromEntries(form);
+
+        if (typeof task !== 'string') {
+          return;
+        }
+
+        // reset form
+        target.reset();
+
+        addDoc(collection(db, 'todos'), {
+          uid: userData.uid,
+          text: task,
+          complete: false,
+          created: serverTimestamp()
         });
-
-    });
-  }
-
-  addTodo = (e: SubmitEvent, uid?: string) => {
-
-    e.preventDefault();
-
-    if (!uid) {
-      throw 'No UID!';
+      };
     }
+  }
+);
 
-    // get and reset form
-    const target = e.target as HTMLFormElement;
-    const form = new FormData(target);
-    const { task } = Object.fromEntries(form);
-
-    if (typeof task !== 'string') {
-      return;
+export const UPDATE_TODO = new InjectionToken(
+  'UPDATE_TODO',
+  {
+    providedIn: 'root',
+    factory() {
+      const db = inject(Firestore);
+      return (id: string, complete: boolean) => {
+        updateDoc(doc(db, 'todos', id), { complete });
+      };
     }
-
-    // reset form
-    target.reset();
-
-    addDoc(collection(this.db, 'todos'), {
-      uid,
-      text: task,
-      complete: false,
-      created: serverTimestamp()
-    });
   }
+);
 
-  updateTodo = (id: string, complete: boolean) => {
-    updateDoc(doc(this.db, 'todos', id), { complete });
+export const DELETE_TODO = new InjectionToken(
+  'DELETE_TODO',
+  {
+    providedIn: 'root',
+    factory() {
+      const db = inject(Firestore);
+      return (id: string) => {
+        deleteDoc(doc(db, 'todos', id));
+      };
+    }
   }
-
-  deleteTodo = (id: string) => {
-    deleteDoc(doc(this.db, 'todos', id));
-  }
-
-}
+);

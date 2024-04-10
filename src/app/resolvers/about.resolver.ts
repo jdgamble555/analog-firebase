@@ -7,33 +7,43 @@ export type AboutDoc = {
   description: string;
 };
 
-export const aboutResolver: ResolveFn<AboutDoc> = async () => {
-
-  const db = inject(Firestore);
+export const useAsyncTransferState = async <T>(
+  name: string,
+  fn: () => T
+) => {
   const state = inject(TransferState);
-
-  const key = makeStateKey<AboutDoc>('about');
-
+  const key = makeStateKey<T>(name);
   const cache = state.get(key, null);
   if (cache) {
-    return cache;    
+    return cache;
   }
-
-  const aboutSnap = await getDoc(
-    doc(db, '/about/ZlNJrKd6LcATycPRmBPA')
-  );
-
-  if (!aboutSnap.exists()) {
-    throw 'Document does not exist!';
-  }
-
-  const data = aboutSnap.data() as AboutDoc;
-
+  const data = await fn() as T;
   state.set(key, data);
-
-  if (isDevMode()) {
-    console.log(data);
-  }
-
   return data;
+};
+
+export const aboutResolver: ResolveFn<AboutDoc> = async () => {
+
+  return await useAsyncTransferState('about', async () => {
+
+    const db = inject(Firestore);
+
+    const aboutSnap = await getDoc(
+      doc(db, '/about/ZlNJrKd6LcATycPRmBPA')
+    );
+
+    if (!aboutSnap.exists()) {
+      throw 'Document does not exist!';
+    }
+
+    const data = aboutSnap.data() as AboutDoc;
+
+    if (isDevMode()) {
+      console.log(data);
+    }
+
+    return data;
+
+  });
+
 };

@@ -1,13 +1,17 @@
-<span [ngClass]="todo.complete ? 'line-through text-green-700' : ''">{{ todo.text }}</span>
-<span [ngClass]="todo.complete ? 'line-through text-green-700' : ''">{{ todo.id }}</span>
+<span [ngClass]="todo.complete ? 'line-through text-green-700' : ''">
+    {{ todo.text }}
+</span>
+<span [ngClass]="todo.complete ? 'line-through text-green-700' : ''">
+    {{ todo.id }}
+</span>
 
 @if (todo.complete) {
 
-<button type="button" (click)="ts.updateTodo(todo.id, !todo.complete)"> ✔️ </button>
+<button type="button" (click)="updateTodo(todo.id, !todo.complete)"> ✔️ </button>
 
 } @else {
 
-<button type="button" (click)="ts.updateTodo(todo.id, !todo.complete)"> ❌ </button>
+<button type="button" (click)="updateTodo(todo.id, !todo.complete)"> ❌ </button>
 
 }
-<button type="button" (click)="ts.deleteTodo(todo.id)"> 🗑 </button>
+<button type="button" (click)="deleteTodo(todo.id)"> 🗑 </button>

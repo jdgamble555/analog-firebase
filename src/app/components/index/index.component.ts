@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ProfileComponent } from '../profile/profile.component';
-import { UserService } from '@services/user.service';
+import { LOGIN, USER } from '@services/user.service';
 
 @Component({
   selector: 'app-index',
@@ -9,5 +9,6 @@ import { UserService } from '@services/user.service';
   templateUrl: './index.component.html'
 })
 export class IndexComponent {
-  us = inject(UserService);
+  user = inject(USER);
+  login = inject(LOGIN);
 }
