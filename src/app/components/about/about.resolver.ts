@@ -8,9 +8,9 @@ export type AboutDoc = {
   description: string;
 };
 
-export const aboutResolver: ResolveFn<AboutDoc> = async () => {
-
-  return await useAsyncTransferState('about', async () => {
+export const aboutResolver: ResolveFn<AboutDoc> = async () =>
+  
+  useAsyncTransferState('about', async () => {
 
     const db = inject(Firestore);
 
@@ -32,4 +32,3 @@ export const aboutResolver: ResolveFn<AboutDoc> = async () => {
 
   });
 
-};

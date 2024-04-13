@@ -1,4 +1,5 @@
 <div>
+    @if (!todos().loading) {
     <div class="grid grid-cols-[auto,auto,auto,auto] gap-3 justify-items-start">
         @for (todo of todos().data; track todo.id) {
         <app-todo-item class="contents" [todo]="todo" />
@@ -7,4 +8,7 @@
         }
     </div>
     <app-todo-form />
+    } @else {
+    <p>Loading...</p>
+    }
 </div>
