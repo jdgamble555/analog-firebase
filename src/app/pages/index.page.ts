@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { IndexComponent } from '../components/index/index.component';
+import { HomeComponent } from '@components/home/home.component';
 
 @Component({
-  selector: 'app-home',
+  selector: 'app-index',
   standalone: true,
-  imports: [IndexComponent],
-  template: ` <app-index /> `
+  imports: [HomeComponent],
+  template: ` <app-home /> `
 })
-export default class HomeComponent { }
+export default class IndexComponent { }

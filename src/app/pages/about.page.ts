@@ -1,31 +1,16 @@
-import { Component, inject } from '@angular/core';
-import { IndexComponent } from '../components/index/index.component';
-import { ActivatedRoute } from '@angular/router';
-import { AboutDoc, aboutResolver } from '../resolvers/about.resolver';
 import { RouteMeta } from '@analogjs/router';
+import { Component } from '@angular/core';
+import AboutComponent from '@components/about/about.component';
+import { aboutResolver } from '@components/about/about.resolver';
 
 export const routeMeta: RouteMeta = {
-    resolve: { data: aboutResolver }
+  resolve: { data: aboutResolver }
 };
 
 @Component({
-    selector: 'app-home',
-    standalone: true,
-    imports: [IndexComponent],
-    template: `
-    @if (about) {
-    <div class="flex items-center justify-center my-5">
-        <div class="border w-[400px] p-5 flex flex-col gap-3">
-            <h1 class="text-3xl font-semibold">{{ about.name }}</h1>
-            <p>{{ about.description }}</p>
-        </div>
-    </div>
-    }
-    `
+  selector: 'app-route',
+  standalone: true,
+  imports: [AboutComponent],
+  template: ` <app-about /> `
 })
-export default class AboutComponent {
-
-    private route = inject(ActivatedRoute);
-
-    about = this.route.snapshot.data['data'] as AboutDoc;
-}
+export default class AboutRoute { }

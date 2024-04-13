@@ -1,14 +1,14 @@
 import { Component, inject } from '@angular/core';
-import { ProfileComponent } from '../profile/profile.component';
+import { ProfileComponent } from '@components/profile/profile.component';
 import { LOGIN, USER } from '@services/user.service';
 
 @Component({
-  selector: 'app-index',
+  selector: 'app-home',
   standalone: true,
   imports: [ProfileComponent],
-  templateUrl: './index.component.html'
+  templateUrl: './home.component.html'
 })
-export class IndexComponent {
+export class HomeComponent {
   user = inject(USER);
   login = inject(LOGIN);
 }

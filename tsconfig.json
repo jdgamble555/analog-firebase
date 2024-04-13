@@ -28,6 +28,18 @@
       ],
       "@services/*": [
         "./app/services/*"
+      ],
+      "@components": [
+        "./app/components"
+      ],
+      "@components/*": [
+        "./app/components/*"
+      ],
+      "@lib": [
+        "./app/lib"
+      ],
+      "@lib/*": [
+        "./app/lib/*"
       ]
     },
   },

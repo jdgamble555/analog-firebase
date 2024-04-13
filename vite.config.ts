@@ -13,7 +13,9 @@ export default defineConfig(({ mode }) => ({
   },
   resolve: {
     alias: {
-      '@services': resolve(__dirname, './src/app/services')
+      '@services': resolve(__dirname, './src/app/services'),
+      '@components': resolve(__dirname, './src/app/components'),
+      '@lib': resolve(__dirname, './src/app/lib')
     },
     mainFields: ['module'],
   },
