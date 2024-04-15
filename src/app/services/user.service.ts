@@ -55,23 +55,30 @@ export const USER = new InjectionToken(
       });
 
       effect(() => {
-        // toggle loading
-        user$().loading = true;
 
         // server environment
         if (!auth) {
-          user$().loading = false;
-          user$().data = null;
+          user$.set({
+            data: null,
+            loading: false
+          });
           return;
         }
+
+        // toggle loading
+        user$.update(_user => ({
+          ..._user,
+          loading: true
+        }));
 
         return onIdTokenChanged(auth,
           (_user: User | null) => {
 
-            user$().loading = false;
-
             if (!_user) {
-              user$().data = null;
+              user$.set({
+                data: null,
+                loading: false
+              });
               return;
             }
 
@@ -95,9 +102,12 @@ export const USER = new InjectionToken(
             }
 
             // set store
-            user$().data = data;
+            user$.set({
+              data,
+              loading: false
+            });
           });
-      });
+      }, { allowSignalWrites: true });
       return user$;
     }
   }

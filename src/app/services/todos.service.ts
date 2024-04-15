@@ -73,10 +73,17 @@ export const TODOS = new InjectionToken(
         const userData = user().data;
 
         if (!userData) {
-          todos().loading = false;
-          todos().data = [];
+          todos.set({
+            loading: false,
+            data: []
+          });
           return;
         }
+
+        todos.update(_todos => ({
+          ..._todos,
+          loading: false
+        }));
 
         return onSnapshot(
 
@@ -86,9 +93,6 @@ export const TODOS = new InjectionToken(
             where('uid', '==', userData.uid),
             orderBy('created')
           ), (q) => {
-
-            // toggle loading
-            todos().loading = false;
 
             // get data, map to todo type
             const data = snapToData(q);
@@ -105,10 +109,13 @@ export const TODOS = new InjectionToken(
             }
 
             // add to store
-            todos().data = data;
+            todos.set({
+              data,
+              loading: false
+            });
           });
 
-      });
+      }, { allowSignalWrites: true });
       return todos;
     }
   }
