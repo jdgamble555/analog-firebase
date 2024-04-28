@@ -1,8 +1,8 @@
 import { isPlatformBrowser } from '@angular/common';
 import {
+  DestroyRef,
   InjectionToken,
   PLATFORM_ID,
-  effect,
   inject,
   isDevMode,
   signal
@@ -45,6 +45,7 @@ export const USER = new InjectionToken(
     factory() {
 
       const auth = inject(FIREBASE_AUTH);
+      const destroy = inject(DestroyRef);
 
       const user$ = signal<{
         loading: boolean,
@@ -54,60 +55,60 @@ export const USER = new InjectionToken(
         data: null
       });
 
-      effect(() => {
+      // server environment
+      if (!auth) {
+        user$.set({
+          data: null,
+          loading: false
+        });
+        return user$;
+      }
 
-        // server environment
-        if (!auth) {
-          user$.set({
-            data: null,
-            loading: false
-          });
-          return;
-        }
+      // toggle loading
+      user$.update(_user => ({
+        ..._user,
+        loading: true
+      }));
 
-        // toggle loading
-        user$.update(_user => ({
-          ..._user,
-          loading: true
-        }));
+      const unsubscribe = onIdTokenChanged(auth,
+        (_user: User | null) => {
 
-        return onIdTokenChanged(auth,
-          (_user: User | null) => {
-
-            if (!_user) {
-              user$.set({
-                data: null,
-                loading: false
-              });
-              return;
-            }
-
-            // map data to user data type
-            const {
-              photoURL,
-              uid,
-              displayName,
-              email
-            } = _user;
-            const data = {
-              photoURL,
-              uid,
-              displayName,
-              email
-            };
-
-            // print data in dev mode
-            if (isDevMode()) {
-              console.log(data);
-            }
-
-            // set store
+          if (!_user) {
             user$.set({
-              data,
+              data: null,
               loading: false
             });
+            return;
+          }
+
+          // map data to user data type
+          const {
+            photoURL,
+            uid,
+            displayName,
+            email
+          } = _user;
+          const data = {
+            photoURL,
+            uid,
+            displayName,
+            email
+          };
+
+          // print data in dev mode
+          if (isDevMode()) {
+            console.log(data);
+          }
+
+          // set store
+          user$.set({
+            data,
+            loading: false
           });
-      }, { allowSignalWrites: true });
+        });
+
+      destroy.onDestroy(unsubscribe);
+
       return user$;
     }
   }

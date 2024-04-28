@@ -1,6 +1,6 @@
 import {
+  DestroyRef,
   InjectionToken,
-  effect,
   inject,
   isDevMode,
   signal
@@ -57,6 +57,7 @@ export const TODOS = new InjectionToken(
   {
     providedIn: 'root',
     factory() {
+      const destroy = inject(DestroyRef);
       const db = inject(Firestore);
       const user = inject(USER);
 
@@ -68,54 +69,53 @@ export const TODOS = new InjectionToken(
         loading: true
       });
 
-      effect(() => {
+      const userData = user().data;
 
-        const userData = user().data;
+      if (!userData) {
+        todos.set({
+          loading: false,
+          data: []
+        });
+        return todos;
+      }
 
-        if (!userData) {
+      todos.update(_todos => ({
+        ..._todos,
+        loading: false
+      }));
+
+      const unsubscribe = onSnapshot(
+
+        // query realtime todo list
+        query(
+          collection(db, 'todos'),
+          where('uid', '==', userData.uid),
+          orderBy('created')
+        ), (q) => {
+
+          // get data, map to todo type
+          const data = snapToData(q);
+
+          /**
+           * Note: Will get triggered 2x on add 
+           * 1 - for optimistic update
+           * 2 - update real date from server date
+           */
+
+          // print data in dev mode
+          if (isDevMode()) {
+            console.log(data);
+          }
+
+          // add to store
           todos.set({
-            loading: false,
-            data: []
+            data,
+            loading: false
           });
-          return;
-        }
+        });
 
-        todos.update(_todos => ({
-          ..._todos,
-          loading: false
-        }));
+      destroy.onDestroy(unsubscribe);
 
-        return onSnapshot(
-
-          // query realtime todo list
-          query(
-            collection(db, 'todos'),
-            where('uid', '==', userData.uid),
-            orderBy('created')
-          ), (q) => {
-
-            // get data, map to todo type
-            const data = snapToData(q);
-
-            /**
-             * Note: Will get triggered 2x on add 
-             * 1 - for optimistic update
-             * 2 - update real date from server date
-             */
-
-            // print data in dev mode
-            if (isDevMode()) {
-              console.log(data);
-            }
-
-            // add to store
-            todos.set({
-              data,
-              loading: false
-            });
-          });
-
-      }, { allowSignalWrites: true });
       return todos;
     }
   }
