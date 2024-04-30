@@ -1,9 +1,10 @@
 import {
-  DestroyRef,
   InjectionToken,
+  effect,
   inject,
   isDevMode,
-  signal
+  signal,
+  untracked
 } from '@angular/core';
 import {
   DocumentData,
@@ -22,12 +23,13 @@ import {
   Firestore
 } from '@angular/fire/firestore';
 import { USER } from './user.service';
+import { FirebaseError } from 'firebase/app';
 
 export interface TodoItem {
   id: string;
   text: string;
   complete: boolean;
-  created: Date;
+  createdAt: Date;
   uid: string;
 };
 
@@ -43,10 +45,10 @@ export const snapToData = (
     const data = doc.data({
       serverTimestamps: 'estimate'
     });
-    const created = data['created'] as Timestamp;
+    const createdAt = data['createdAt'] as Timestamp;
     return {
       ...data,
-      created: created.toDate(),
+      createdAt: createdAt.toDate(),
       id: doc.id
     }
   }) as TodoItem[];
@@ -57,64 +59,76 @@ export const TODOS = new InjectionToken(
   {
     providedIn: 'root',
     factory() {
-      const destroy = inject(DestroyRef);
       const db = inject(Firestore);
       const user = inject(USER);
 
       const todos = signal<{
         data: TodoItem[],
-        loading: boolean
+        loading: boolean,
+        error: FirebaseError | null
       }>({
         data: [],
-        loading: true
+        loading: true,
+        error: null
       });
 
-      const userData = user().data;
+      effect((onCleanup) => {
 
-      if (!userData) {
-        todos.set({
-          loading: false,
-          data: []
-        });
-        return todos;
-      }
+        const userData = user().data;
 
-      todos.update(_todos => ({
-        ..._todos,
-        loading: false
-      }));
-
-      const unsubscribe = onSnapshot(
-
-        // query realtime todo list
-        query(
-          collection(db, 'todos'),
-          where('uid', '==', userData.uid),
-          orderBy('created')
-        ), (q) => {
-
-          // get data, map to todo type
-          const data = snapToData(q);
-
-          /**
-           * Note: Will get triggered 2x on add 
-           * 1 - for optimistic update
-           * 2 - update real date from server date
-           */
-
-          // print data in dev mode
-          if (isDevMode()) {
-            console.log(data);
-          }
-
-          // add to store
-          todos.set({
-            data,
-            loading: false
+        if (!userData) {
+          untracked(() => {
+            todos.set({
+              loading: false,
+              data: [],
+              error: null
+            });
           });
-        });
+          return;
+        }
 
-      destroy.onDestroy(unsubscribe);
+        const unsubscribe = onSnapshot(
+
+          // query realtime todo list
+          query(
+            collection(db, 'todos'),
+            where('uid', '==', userData.uid),
+            orderBy('createdAt')
+          ), (q) => {
+
+            // get data, map to todo type
+            const data = snapToData(q);
+
+            /**
+             * Note: Will get triggered 2x on add 
+             * 1 - for optimistic update
+             * 2 - update real date from server date
+             */
+
+            // print data in dev mode
+            if (isDevMode()) {
+              console.log(data);
+            }
+
+            // add to store            
+            todos.set({
+              data,
+              loading: false,
+              error: null
+            });
+          }, (error) => {
+
+            // handle errors
+            todos.set({
+              loading: false,
+              data: [],
+              error
+            });
+            
+          });
+
+        onCleanup(unsubscribe);
+      });
 
       return todos;
     }
@@ -156,7 +170,7 @@ export const ADD_TODO = new InjectionToken(
           uid: userData.uid,
           text: task,
           complete: false,
-          created: serverTimestamp()
+          createdAt: serverTimestamp()
         });
       };
     }

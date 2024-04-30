@@ -1,5 +1,5 @@
 <div class="text-center">
-    <h1 class="text-3xl font-semibold my-3">Angular Firebase Todo App</h1>
+    <h1 class="text-3xl font-semibold my-3">Analog Firebase Todo App</h1>
 
     @if (user().loading) {
 
@@ -7,7 +7,11 @@
 
     } @else if (user().data) {
 
-        <app-profile />
+    <app-profile />
+
+    } @else if (user().error) {
+
+    <p class="text-red-500">Error: {{ user().error?.message }}</p>
 
     } @else {
 

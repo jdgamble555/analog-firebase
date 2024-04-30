@@ -16,7 +16,6 @@ import {
   signOut
 } from '@angular/fire/auth';
 
-
 export interface userData {
   photoURL: string | null;
   uid: string;
@@ -47,25 +46,28 @@ export const USER = new InjectionToken(
       const auth = inject(FIREBASE_AUTH);
       const destroy = inject(DestroyRef);
 
-      const user$ = signal<{
+      const user = signal<{
         loading: boolean,
-        data: userData | null
+        data: userData | null,
+        error: Error | null
       }>({
         loading: true,
-        data: null
+        data: null,
+        error: null
       });
 
       // server environment
       if (!auth) {
-        user$.set({
+        user.set({
           data: null,
-          loading: false
+          loading: false,
+          error: null
         });
-        return user$;
+        return user;
       }
 
       // toggle loading
-      user$.update(_user => ({
+      user.update(_user => ({
         ..._user,
         loading: true
       }));
@@ -74,9 +76,10 @@ export const USER = new InjectionToken(
         (_user: User | null) => {
 
           if (!_user) {
-            user$.set({
+            user.set({
               data: null,
-              loading: false
+              loading: false,
+              error: null
             });
             return;
           }
@@ -101,15 +104,25 @@ export const USER = new InjectionToken(
           }
 
           // set store
-          user$.set({
+          user.set({
             data,
-            loading: false
+            loading: false,
+            error: null
           });
+        }, (error) => {
+
+          // handle error
+          user.set({
+            data: null,
+            loading: false,
+            error
+          });
+
         });
 
       destroy.onDestroy(unsubscribe);
 
-      return user$;
+      return user;
     }
   }
 );
