@@ -1,14 +1,13 @@
 import { Component } from '@angular/core';
-import { AboutDoc } from './about.resolver';
-import { injectResolver } from '@lib/utils';
-import { AsyncPipe } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { injectLoad } from '@analogjs/router';
+import type { load } from '../../pages/about.server';
 
 @Component({
     selector: 'app-about',
     standalone: true,
-    imports: [AsyncPipe],
     template: `
-    @if (about | async; as data) {
+    @if (about(); as data) {
     <div class="flex items-center justify-center my-5">
         <div class="border w-[400px] p-5 flex flex-col gap-3">
             <h1 class="text-3xl font-semibold">{{ data.name }}</h1>
@@ -19,5 +18,5 @@ import { AsyncPipe } from '@angular/common';
     `
 })
 export default class AboutComponent {
-    about = injectResolver<AboutDoc>('data');
+    about = toSignal(injectLoad<typeof load>(), { requireSync: true });
 }

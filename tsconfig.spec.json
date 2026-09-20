@@ -3,10 +3,12 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "composite": false,
+    "rootDir": "./src",
     "outDir": "./out-tsc/spec",
     "target": "es2016",
     "types": ["node", "vitest/globals"],
   },
   "files": ["src/test.ts"],
-  "include": ["src/**/*.spec.ts", "src/**/*.ts"]
+  "include": ["src/**/*.spec.ts", "src/**/*.ts"],
+  "exclude": []
 }

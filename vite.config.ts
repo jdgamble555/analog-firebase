@@ -13,11 +13,13 @@ export default defineConfig(({ mode }) => ({
   },
   resolve: {
     alias: {
-      '@services': resolve(__dirname, './src/app/services'),
-      '@components': resolve(__dirname, './src/app/components'),
-      '@lib': resolve(__dirname, './src/app/lib')
+      '@services': resolve(import.meta.dirname, './src/app/services'),
+      '@components': resolve(import.meta.dirname, './src/app/components')
     },
     mainFields: ['module'],
+  },
+  optimizeDeps: {
+    exclude: ['@angular-devkit/core'],
   },
   plugins: [analog({
     nitro: {

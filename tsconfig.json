@@ -12,34 +12,26 @@
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "declaration": false,
-    "downlevelIteration": true,
     "experimentalDecorators": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
     "lib": ["ES2022", "dom", "DOM.Iterable"],
     "useDefineForClassFields": false,
     "skipLibCheck": true,
-    "baseUrl": "./src",
     "paths": {
       "@services": [
-        "./app/services"
+        "./src/app/services"
       ],
       "@services/*": [
-        "./app/services/*"
+        "./src/app/services/*"
       ],
       "@components": [
-        "./app/components"
+        "./src/app/components"
       ],
       "@components/*": [
-        "./app/components/*"
-      ],
-      "@lib": [
-        "./app/lib"
-      ],
-      "@lib/*": [
-        "./app/lib/*"
+        "./src/app/components/*"
       ]
     },
   },
@@ -48,5 +40,6 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  }
+  },
+  "exclude": ["src/**/*.spec.ts"]
 }

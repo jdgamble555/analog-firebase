@@ -1,0 +1,13 @@
+{
+  "date": "2026-09-20T19:52:25.526Z",
+  "preset": "netlify-edge",
+  "framework": {
+    "name": "nitro",
+    "version": ""
+  },
+  "versions": {
+    "nitro": "2.13.4"
+  },
+  "commands": {},
+  "config": {}
+}
