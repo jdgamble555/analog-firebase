@@ -1,7 +1,6 @@
 import type { PageServerLoad } from '@analogjs/router';
 import { getApps, initializeApp } from 'firebase/app';
 import { doc, getDoc, getFirestore } from 'firebase/firestore';
-import type { AboutDoc } from '@components/about/about.model';
 
 export const load = async (_context: PageServerLoad): Promise<AboutDoc> => {
   const firebaseConfig = JSON.parse(import.meta.env['VITE_FIREBASE_CONFIG']);

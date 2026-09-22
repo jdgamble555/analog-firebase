@@ -1,41 +1,19 @@
-import { isPlatformBrowser } from '@angular/common';
 import {
   DestroyRef,
   InjectionToken,
-  PLATFORM_ID,
   inject,
   isDevMode,
   signal
 } from '@angular/core';
 import {
-  Auth,
   GoogleAuthProvider,
   User,
   onIdTokenChanged,
   signInWithPopup,
   signOut
-} from '@angular/fire/auth';
-
-export interface userData {
-  photoURL: string | null;
-  uid: string;
-  displayName: string | null;
-  email: string | null;
-};
-
-export const FIREBASE_AUTH = new InjectionToken<Auth | null>(
-  'firebase-auth',
-  {
-    providedIn: 'root',
-    factory() {
-      const platformID = inject(PLATFORM_ID);
-      if (isPlatformBrowser(platformID)) {
-        return inject(Auth);
-      }
-      return null;
-    }
-  }
-);
+} from 'firebase/auth';
+import { FirebaseError } from 'firebase/app';
+import { auth } from '../lib/firebase';
 
 export const USER = new InjectionToken(
   'user',
@@ -43,28 +21,17 @@ export const USER = new InjectionToken(
     providedIn: 'root',
     factory() {
 
-      const auth = inject(FIREBASE_AUTH);
       const destroy = inject(DestroyRef);
 
       const user = signal<{
         loading: boolean,
-        data: userData | null,
+        data: UserType | null,
         error: Error | null
       }>({
         loading: true,
         data: null,
         error: null
       });
-
-      // server environment
-      if (!auth) {
-        user.set({
-          data: null,
-          loading: false,
-          error: null
-        });
-        return user;
-      }
 
       // toggle loading
       user.update(_user => ({
@@ -127,40 +94,27 @@ export const USER = new InjectionToken(
   }
 );
 
-export const LOGIN = new InjectionToken(
-  'LOGIN',
-  {
-    providedIn: 'root',
-    factory() {
-      const auth = inject(FIREBASE_AUTH);
-      return () => {
-        if (auth) {
-          signInWithPopup(
-            auth,
-            new GoogleAuthProvider()
-          );
-          return;
-        }
-        throw 'No USER!';
-      };
+export async function login() {
+  try {
+    await signInWithPopup(auth, new GoogleAuthProvider());
+    return { error: null };
+  } catch (error) {
+    if (error instanceof FirebaseError) {
+      return { error: error.message };
     }
+    throw error;
   }
-);
+}
 
-export const LOGOUT = new InjectionToken(
-  'LOGOUT',
-  {
-    providedIn: 'root',
-    factory() {
-      const auth = inject(FIREBASE_AUTH);
-      return () => {
-        if (auth) {
-          signOut(auth);
-          return;
-        }
-        throw 'No USER!';
-      };
+export async function logout() {
+  try {
+    await signOut(auth);
+    return { error: null };
+  } catch (error) {
+    if (error instanceof FirebaseError) {
+      return { error: error.message };
     }
+    throw error;
   }
-);
+}
 

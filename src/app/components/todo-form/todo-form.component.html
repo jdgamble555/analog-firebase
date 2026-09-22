@@ -1,6 +1,10 @@
-<form class="flex gap-3 items-center justify-center mt-5" (submit)="addTodo($event)">
-    <input class="border p-2" name="task" />
-    <button class="border p-2 rounded-md text-white bg-sky-700" type="submit">
+<form class="mt-5" (ngSubmit)="add()">
+    <input class="rounded-lg border p-2" name="task" aria-label="Task" [(ngModel)]="text" />
+    <button class="rounded-lg border bg-purple-600 p-2 font-semibold text-white" type="submit"
+        [disabled]="!text.trim()">
         Add Task
     </button>
+    @if (error(); as message) {
+    <p role="alert" class="text-red-600">{{ message }}</p>
+    }
 </form>

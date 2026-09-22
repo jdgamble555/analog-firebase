@@ -1,14 +1,25 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ProfileComponent } from '@components/profile/profile.component';
-import { LOGIN, USER } from '@services/user.service';
+import { TodosComponent } from '@components/todos/todos.component';
+import { USER, login, logout } from '@services/auth.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [ProfileComponent],
+  imports: [ProfileComponent, TodosComponent],
   templateUrl: './home.component.html'
 })
 export class HomeComponent {
   user = inject(USER);
-  login = inject(LOGIN);
+  actionError = signal<string | null>(null);
+
+  async signIn() {
+    const result = await login();
+    this.actionError.set(result.error);
+  }
+
+  async signOut() {
+    const result = await logout();
+    this.actionError.set(result.error);
+  }
 }

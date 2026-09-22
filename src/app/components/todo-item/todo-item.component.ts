@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, inject } from '@angular/core';
-import { DELETE_TODO, TodoItem, UPDATE_TODO } from '@services/todos.service';
+import { Component, Input, signal } from '@angular/core';
+import { deleteTodo, updateTodo } from '@services/todos.service';
 
 @Component({
   selector: 'app-todo-item',
@@ -10,9 +10,16 @@ import { DELETE_TODO, TodoItem, UPDATE_TODO } from '@services/todos.service';
 })
 export class TodoItemComponent {
 
-  @Input() todo!: TodoItem;
+  @Input() todo!: TodoDoc;
 
-  updateTodo = inject(UPDATE_TODO);
-  deleteTodo = inject(DELETE_TODO);
+  error = signal<string | null>(null);
+
+  async toggleStatus() {
+    this.error.set((await updateTodo(this.todo.id, !this.todo.complete)).error);
+  }
+
+  async remove() {
+    this.error.set((await deleteTodo(this.todo.id)).error);
+  }
 
 }

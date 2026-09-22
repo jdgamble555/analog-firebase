@@ -1,23 +1,25 @@
-<div class="text-center">
-    <h1 class="text-3xl font-semibold my-3">Analog Firebase Todo App</h1>
+<h1 class="my-3 text-center text-3xl font-semibold">SvelteKit Firebase Todo App</h1>
 
-    @if (user().loading) {
+<section class="flex flex-col items-center gap-3 p-5">
+    @if (actionError(); as error) {
+    <p role="alert" class="text-red-600">{{ error }}</p>
+    }
 
-    <p>Loading...</p>
-
-    } @else if (user().data) {
-
+    @if (user().data) {
     <app-profile />
-
+    <button type="button" class="w-fit rounded-lg border bg-blue-600 p-3 font-semibold text-white"
+        (click)="signOut()">
+        Logout
+    </button>
+    <hr class="w-full" />
+    <app-todos />
+    } @else if (user().loading) {
+    <p>Loading...</p>
     } @else if (user().error) {
-
-    <p class="text-red-500">Error: {{ user().error?.message }}</p>
-
+    <p role="alert" class="text-red-600">{{ user().error?.message }}</p>
     } @else {
-
-    <button type="button" class="border p-2 rounded-md text-white bg-red-600" (click)="login()">
+    <button type="button" class="bg-red-600 p-2 font-semibold text-white" (click)="signIn()">
         Signin with Google
     </button>
-
     }
-</div>
+</section>

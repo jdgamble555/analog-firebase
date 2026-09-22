@@ -1,26 +1,16 @@
 <div>
-    @if (!todos().loading) {
-
+    @if (todos().data.length) {
     <div class="grid grid-cols-[auto,auto,auto,auto] gap-3 justify-items-start">
-
         @for (todo of todos().data; track todo.id) {
-
         <app-todo-item class="contents" [todo]="todo" />
-
-        } @empty {
-
-        <p><b>Add your first todo item!</b></p>
-
         }
     </div>
-    <app-todo-form />
-    } @else if (todos().error) {
-
-    <p class="text-red-500">Error: {{ todos().error?.message }}</p>
-
-    } @else {
-
+    } @else if (todos().loading) {
     <p>Loading...</p>
-
+    } @else if (todos().error) {
+    <p role="alert" class="text-red-600">{{ todos().error?.message }}</p>
+    } @else {
+    <p><b>Add your first todo item!</b></p>
     }
+    <app-todo-form />
 </div>

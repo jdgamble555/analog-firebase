@@ -1,17 +1,13 @@
-<span [ngClass]="todo.complete ? 'line-through text-green-700' : ''">
+<span [ngClass]="todo.complete ? 'line-through text-green-600' : ''">
     {{ todo.text }}
 </span>
-<span [ngClass]="todo.complete ? 'line-through text-green-700' : ''">
+<span [ngClass]="todo.complete ? 'line-through text-green-600' : ''">
     {{ todo.id }}
 </span>
 
-@if (todo.complete) {
-
-<button type="button" (click)="updateTodo(todo.id, !todo.complete)"> ✔️ </button>
-
-} @else {
-
-<button type="button" (click)="updateTodo(todo.id, !todo.complete)"> ❌ </button>
-
+<button type="button" [attr.aria-label]="todo.complete ? 'Mark task incomplete' : 'Mark task complete'"
+    (click)="toggleStatus()">{{ todo.complete ? '✔️' : '❌' }}</button>
+<button type="button" aria-label="Delete task" (click)="remove()">🗑</button>
+@if (error(); as message) {
+<p role="alert" class="text-red-600">{{ message }}</p>
 }
-<button type="button" (click)="deleteTodo(todo.id)"> 🗑 </button>
