@@ -4,6 +4,8 @@ interface ImportMetaEnv {
 	readonly VITE_FIREBASE_CONFIG: string;
 }
 
+declare const __FIREBASE_CONFIG__: string;
+
 // Uncomment the lines below to enable types for experimental .analog format support
 // interface ImportAttributes {
 //   analog: 'imports' | 'providers' | 'viewProviders' | 'exposes';
