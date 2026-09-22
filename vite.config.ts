@@ -28,7 +28,10 @@ export default defineConfig(({ mode }) => {
   plugins: [analog({
     nitro: {
       preset: 'netlify-edge',
-      alias: aliases
+      alias: aliases,
+      replace: {
+        __FIREBASE_CONFIG__: JSON.stringify(env['VITE_FIREBASE_CONFIG'] ?? ''),
+      },
     }
   })],
   test: {
@@ -40,7 +43,7 @@ export default defineConfig(({ mode }) => {
   },
     define: {
       'import.meta.vitest': mode !== 'production',
-      __FIREBASE_CONFIG__: JSON.stringify(env.VITE_FIREBASE_CONFIG ?? ''),
+      __FIREBASE_CONFIG__: JSON.stringify(env['VITE_FIREBASE_CONFIG'] ?? ''),
     },
   };
 });
