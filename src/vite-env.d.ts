@@ -1,5 +1,9 @@
 /// <reference types="vite/client" />
 
+interface ImportMetaEnv {
+	readonly VITE_FIREBASE_CONFIG: string;
+}
+
 // Uncomment the lines below to enable types for experimental .analog format support
 // interface ImportAttributes {
 //   analog: 'imports' | 'providers' | 'viewProviders' | 'exposes';
