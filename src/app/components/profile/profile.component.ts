@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { USER } from '@services/auth.service';
+import { USER } from '@lib/auth';
 
 
 @Component({

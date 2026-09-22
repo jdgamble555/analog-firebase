@@ -21,11 +21,11 @@
     "useDefineForClassFields": false,
     "skipLibCheck": true,
     "paths": {
-      "@services": [
-        "./src/app/services"
+      "@lib": [
+        "./src/app/lib"
       ],
-      "@services/*": [
-        "./src/app/services/*"
+      "@lib/*": [
+        "./src/app/lib/*"
       ],
       "@components": [
         "./src/app/components"

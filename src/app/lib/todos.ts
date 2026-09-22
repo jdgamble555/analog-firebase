@@ -6,7 +6,9 @@ import {
   signal,
   untracked
 } from '@angular/core';
+import { FirebaseError } from 'firebase/app';
 import {
+  Timestamp,
   addDoc,
   collection,
   deleteDoc,
@@ -17,15 +19,10 @@ import {
   serverTimestamp,
   updateDoc,
   where,
-  Timestamp,
   type FirestoreDataConverter
 } from 'firebase/firestore';
-import { USER } from './auth.service';
-import { FirebaseError } from 'firebase/app';
-import { db } from '../lib/firebase';
-
-export const generateText = () =>
-  doc(collection(db, 'todos')).id.substring(0, 10).toLowerCase();
+import { USER } from './auth';
+import { db } from './firebase';
 
 const todoConverter: FirestoreDataConverter<TodoDoc> = {
   toFirestore(todo) {
@@ -63,7 +60,6 @@ export const TODOS = new InjectionToken(
       });
 
       effect((onCleanup) => {
-
         const userData = user().data;
 
         if (!userData) {
@@ -78,8 +74,6 @@ export const TODOS = new InjectionToken(
         }
 
         const unsubscribe = onSnapshot(
-
-          // query realtime todo list
           query(
             collection(db, 'todos'),
             where('uid', '==', userData.uid),
@@ -87,33 +81,23 @@ export const TODOS = new InjectionToken(
           ).withConverter(todoConverter), (q) => {
             const data = q.docs.map((document) => document.data());
 
-            /**
-             * Note: Will get triggered 2x on add 
-             * 1 - for optimistic update
-             * 2 - update real date from server date
-             */
-
-            // print data in dev mode
             if (isDevMode()) {
               console.log(data);
             }
 
-            // add to store            
             todos.set({
               data,
               loading: false,
               error: null
             });
           }, (error) => {
-
-            // handle errors
             todos.set({
               loading: false,
               data: [],
               error
             });
-            
-          });
+          }
+        );
 
         onCleanup(unsubscribe);
       });
@@ -122,6 +106,9 @@ export const TODOS = new InjectionToken(
     }
   }
 );
+
+export const generateText = () =>
+  doc(collection(db, 'todos')).id.substring(0, 10).toLowerCase();
 
 export async function addTodo(text: string, currentUser: UserType | null) {
   if (!currentUser) {

@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => ({
   },
   resolve: {
     alias: {
-      '@services': resolve(import.meta.dirname, './src/app/services'),
+      '@lib': resolve(import.meta.dirname, './src/app/lib'),
       '@components': resolve(import.meta.dirname, './src/app/components')
     },
     mainFields: ['module'],

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, signal } from '@angular/core';
-import { deleteTodo, updateTodo } from '@services/todos.service';
+import { deleteTodo, updateTodo } from '@lib/todos';
 
 @Component({
   selector: 'app-todo-item',

@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { TODOS } from '@services/todos.service';
+import { TODOS } from '@lib/todos';
 import { TodoItemComponent } from '../todo-item/todo-item.component';
 import { TodoFormComponent } from '../todo-form/todo-form.component';
 

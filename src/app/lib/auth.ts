@@ -3,24 +3,28 @@ import {
   InjectionToken,
   inject,
   isDevMode,
-  signal
+  signal,
+  type Signal
 } from '@angular/core';
+import { FirebaseError } from 'firebase/app';
 import {
   GoogleAuthProvider,
-  User,
+  type User,
   onIdTokenChanged,
   signInWithPopup,
   signOut
 } from 'firebase/auth';
-import { FirebaseError } from 'firebase/app';
-import { auth } from '../lib/firebase';
+import { auth } from './firebase';
 
-export const USER = new InjectionToken(
+export const USER = new InjectionToken<Signal<{
+  loading: boolean,
+  data: UserType | null,
+  error: Error | null
+}>>(
   'user',
   {
     providedIn: 'root',
     factory() {
-
       const destroy = inject(DestroyRef);
 
       const user = signal<{
@@ -33,7 +37,6 @@ export const USER = new InjectionToken(
         error: null
       });
 
-      // toggle loading
       user.update(_user => ({
         ..._user,
         loading: true
@@ -41,7 +44,6 @@ export const USER = new InjectionToken(
 
       const unsubscribe = onIdTokenChanged(auth,
         (_user: User | null) => {
-
           if (!_user) {
             user.set({
               data: null,
@@ -51,13 +53,13 @@ export const USER = new InjectionToken(
             return;
           }
 
-          // map data to user data type
           const {
             photoURL,
             uid,
             displayName,
             email
           } = _user;
+
           const data = {
             photoURL,
             uid,
@@ -65,27 +67,23 @@ export const USER = new InjectionToken(
             email
           };
 
-          // print data in dev mode
           if (isDevMode()) {
             console.log(data);
           }
 
-          // set store
           user.set({
             data,
             loading: false,
             error: null
           });
         }, (error) => {
-
-          // handle error
           user.set({
             data: null,
             loading: false,
             error
           });
-
-        });
+        }
+      );
 
       destroy.onDestroy(unsubscribe);
 
@@ -117,4 +115,3 @@ export async function logout() {
     throw error;
   }
 }
-

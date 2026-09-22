@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { USER } from '@services/auth.service';
-import { addTodo, generateText } from '@services/todos.service';
+import { USER } from '@lib/auth';
+import { addTodo, generateText } from '@lib/todos';
 
 @Component({
   selector: 'app-todo-form',

@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { ProfileComponent } from '@components/profile/profile.component';
 import { TodosComponent } from '@components/todos/todos.component';
-import { USER, login, logout } from '@services/auth.service';
+import { USER, login, logout } from '@lib/auth';
 
 @Component({
   selector: 'app-home',
