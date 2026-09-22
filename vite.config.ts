@@ -4,6 +4,10 @@ import { defineConfig } from 'vite';
 import analog from '@analogjs/platform';
 import { resolve } from 'path';
 
+const aliases = {
+  '@lib': resolve(import.meta.dirname, './src/app/lib'),
+  '@components': resolve(import.meta.dirname, './src/app/components')
+};
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -12,10 +16,7 @@ export default defineConfig(({ mode }) => ({
     target: ['es2020'],
   },
   resolve: {
-    alias: {
-      '@lib': resolve(import.meta.dirname, './src/app/lib'),
-      '@components': resolve(import.meta.dirname, './src/app/components')
-    },
+    alias: aliases,
     mainFields: ['module'],
   },
   optimizeDeps: {
@@ -23,7 +24,8 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [analog({
     nitro: {
-      preset: 'netlify-edge'
+      preset: 'netlify-edge',
+      alias: aliases
     }
   })],
   test: {
