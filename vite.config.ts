@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
 
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig } from 'vitest/config';
 import analog from '@analogjs/platform';
 import { resolve } from 'path';
 
@@ -10,11 +10,8 @@ const aliases = {
 };
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), 'VITE_');
-
-  return {
-    publicDir: 'src/assets',
+export default defineConfig({
+  publicDir: 'src/assets',
   build: {
     target: ['es2020'],
   },
@@ -29,10 +26,7 @@ export default defineConfig(({ mode }) => {
     nitro: {
       preset: 'netlify-edge',
       alias: aliases,
-      replace: {
-        __FIREBASE_CONFIG__: JSON.stringify(env['VITE_FIREBASE_CONFIG'] ?? ''),
-      },
-    }
+    },
   })],
   test: {
     globals: true,
@@ -41,9 +35,4 @@ export default defineConfig(({ mode }) => {
     include: ['**/*.spec.ts'],
     reporters: ['default'],
   },
-    define: {
-      'import.meta.vitest': mode !== 'production',
-      __FIREBASE_CONFIG__: JSON.stringify(env['VITE_FIREBASE_CONFIG'] ?? ''),
-    },
-  };
 });

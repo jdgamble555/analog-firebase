@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore/lite";
 
-const firebase_config = JSON.parse(__FIREBASE_CONFIG__);
+const firebase_config = JSON.parse(process.env['VITE_FIREBASE_CONFIG'] ?? '');
 
 const serverApp = initializeApp(firebase_config);
 
