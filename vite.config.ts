@@ -24,7 +24,7 @@ export default defineConfig({
   },
   plugins: [analog({
     nitro: {
-      preset: 'netlify-edge',
+      preset: 'netlify',
       alias: aliases,
     },
   })],
