@@ -1,2 +1,7 @@
+[build]
+  command = "npm run build"
+  publish = "dist/analog/public"
+  functions = "dist/analog/server"
+
 [build.environment]
   NODE_VERSION = "22.22.3"
